@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Tata Safety Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-sidebar {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 30px;
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .admin-main {
+            margin-left: 250px;
+            padding: 40px;
+            min-height: 100vh;
+            background-color: var(--background);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background-color: #f9fbfd;
+        }
+
+        .stats-cards {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 8px;
+            flex: 1;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .charts-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .chart-box {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            min-width: 300px;
+        }
+
+        #admin-dashboard {
+            display: none;
+        }
+
+        #admin-login-view {
+            max-width: 400px;
+            margin: 100px auto;
+        }
+    </style>
+    <!-- Chart.js for graphs and animations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- Admin Login View -->
+    <section id="admin-login-view" class="card premium-card">
+        <h2>Admin Login</h2>
+        <p>Enter credentials to access the dashboard.</p>
+        <form id="admin-login-form">
+            <div class="form-group">
+                <label for="admin-id">User ID</label>
+                <input type="text" id="admin-id" required>
+            </div>
+            <div class="form-group">
+                <label for="admin-password">Password</label>
+                <input type="password" id="admin-password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+            <a href="index.html" class="admin-link">Back to Quiz</a>
+        </form>
+    </section>
+
+    <!-- Admin Dashboard View -->
+    <section id="admin-dashboard">
+        <aside class="admin-sidebar">
+            <img src="tataprojectslogo.png" alt="TATA Projects"
+                style="width: 100%; max-width: 200px; background: white; padding: 10px; border-radius: 4px; object-fit: contain;">
+            <br>
+            <p>Admin Dashboard</p>
+            <br>
+            <hr><br>
+            <ul>
+                <li style="list-style: none;"><a href="#"
+                        style="color: #fff; text-decoration: none; font-weight: bold;">📊 Participants</a></li>
+            </ul>
+        </aside>
+
+        <main class="admin-main">
+            <h2>Safety Quiz - Results Dashboard</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Review the performance and answers of all
+                contestants below.</p>
+
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>Total Participants</h3>
+                    <div class="value" id="stat-total">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg Score</h3>
+                    <div class="value" id="stat-avg">0%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Highest Score</h3>
+                    <div class="value" id="stat-highest">0</div>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-box">
+                    <canvas id="scoreChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <canvas id="accuracyChart"></canvas>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date Time</th>
+                        <th>Emp ID</th>
+                        <th>Name</th>
+                        <th>Score (Out of 30)</th>
+                        <th>Right</th>
+                        <th>Wrong</th>
+                        <th>Skipped</th>
+                        <th>Time Taken</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-table-body">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
+        </main>
+    </section>
+
+    <div id="loader" class="loader-overlay hidden"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;">
+        <div class="spinner"
+            style="border: 4px solid #f3f3f3; border-top: 4px solid var(--primary-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px;">
+        </div>
+        <p>Loading Data...</p>
+    </div>
+
+    <!-- Custom Modal -->
+    <div id="custom-modal" class="loader-overlay hidden"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 10000;">
+        <div class="card premium-card" style="margin: 0 20px;">
+            <h2 id="modal-title">Notice</h2>
+            <p id="modal-text">Message goes here</p>
+            <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+                <button id="btn-modal-ok" class="btn btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+    <script src="admin.js"></script>
+</body>
+
+</html>

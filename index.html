@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tata Safety Awareness Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- html2canvas for certificate generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Chart.js for graphs and animations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <header class="app-header">
+        <div class="logo-container">
+            <img src="tataprojectslogo.png" alt="TATA Projects" class="tata-logo"
+                style="height: 80px; width: auto; max-width: 250px; object-fit: contain;">
+        </div>
+        <div class="header-title">
+            <h1>Safety Awareness Quiz | सुरक्षा जागरूकता प्रश्नोत्तरी</h1>
+            <p>NMHC Lothal<br>National Maritime Heritage Complex, Lothal</p>
+        </div>
+        <div class="logo-container right-logo">
+            <img src="OIP.webp" alt="TATA" class="tata-logo-img"
+                style="height: 80px; width: auto; max-width: 150px; object-fit: contain;">
+        </div>
+    </header>
+
+    <main class="app-main">
+        <!-- Landing / Registration View -->
+        <section id="registration-view" class="view active">
+            <div class="card premium-card">
+                <h2>Welcome to the Safety Quiz</h2>
+                <p>Please enter your details to begin.</p>
+                <form id="registration-form">
+                    <div class="form-group">
+                        <label for="reg-name">Full Name / पूरा नाम</label>
+                        <input type="text" id="reg-name" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-empid">Employee ID / कर्मचारी आईडी</label>
+                        <input type="text" id="reg-empid" required placeholder="Ex: TPL12345">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email / ईमेल (Optional)</label>
+                        <input type="email" id="reg-email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-phone">Phone / फोन नंबर</label>
+                        <input type="tel" id="reg-phone" required placeholder="Enter your phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-dept">Department / विभाग</label>
+                        <input type="text" id="reg-dept" required placeholder="Ex: Safety Department / सुरक्षा विभाग">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Start Quiz / प्रश्नोत्तरी शुरू करें</button>
+                    <a href="admin.html" class="admin-link">Admin Login</a>
+                </form>
+            </div>
+        </section>
+
+        <!-- Quiz View -->
+        <section id="quiz-view" class="view hidden">
+            <div class="card quiz-card">
+                <div class="quiz-header">
+                    <h2>Safety Quiz | सुरक्षा प्रश्नोत्तरी</h2>
+                    <div class="progress-container">
+                        <span id="question-progress-text">Question 1 of 30</span>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="progress-bar"></div>
+                        </div>
+                    </div>
+                    <div class="timer" id="timer-display">Time: 00:00</div>
+                </div>
+
+                <div id="questions-container">
+                    <!-- Questions will be injected here by JS -->
+                </div>
+
+                <div class="quiz-footer" style="display: flex; justify-content: space-between; gap: 10px;">
+                    <button id="btn-prev-quiz" class="btn btn-secondary">Previous</button>
+                    <button id="btn-skip-quiz" class="btn btn-secondary">Skip</button>
+                    <button id="btn-next-quiz" class="btn btn-primary">Next</button>
+                    <button id="btn-submit-quiz" class="btn btn-primary" style="display: none;">Submit Quiz</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Result View -->
+        <section id="result-view" class="view hidden">
+            <div class="card result-card">
+                <h2>Quiz Completed! / प्रश्नोत्तरी पूरी हुई!</h2>
+
+                <div style="max-width: 400px; margin: 20px auto; position: relative;">
+                    <canvas id="resultChart"></canvas>
+                </div>
+
+                <div class="score-display">
+                    <h3 id="final-score">0 / 30</h3>
+                    <p id="final-percentage">0%</p>
+                </div>
+                <div class="stats-display">
+                    <p>Time Taken: <span id="time-taken-text"
+                            style="font-weight: bold; color: var(--primary-color);">00:00</span></p>
+                </div>
+
+                <div class="button-group">
+                    <button id="btn-view-certificate" class="btn btn-primary">View Certificate</button>
+                </div>
+
+                <div class="leaderboard-section">
+                    <h3>Top Performers (Leaderboard)</h3>
+                    <ul id="leaderboard-list">
+                        <!-- Leaderboard items will be loaded here -->
+                        <li>Loading leaderboard...</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Certificate View -->
+        <section id="certificate-view" class="view hidden">
+            <div class="certificate-wrapper" id="certificate-element">
+                <div class="certificate-border-outer">
+                    <div class="certificate-border-inner">
+                        <div class="cert-header">
+                            <div class="cert-logo-left"><img src="tataprojectslogo.png" alt="TATA Projects"
+                                    style="height: 40px; object-fit: contain;"></div>
+                            <div class="cert-logo-right"><img src="OIP.webp" alt="TATA"
+                                    style="height: 40px; object-fit: contain;"></div>
+                        </div>
+
+                        <div class="cert-body">
+                            <h3 class="cert-company">TATA PROJECTS LIMITED</h3>
+                            <h4 class="cert-project">NMHC Lothal - National Maritime Heritage Complex</h4>
+
+                            <h1 class="cert-title">CERTIFICATE</h1>
+                            <h2 class="cert-subtitle">OF ACHIEVEMENT</h2>
+
+                            <p class="cert-text">This is to certify that / यह प्रमाणित किया जाता है कि</p>
+
+                            <div class="cert-name" id="cert-name-text">Anish Kumar</div>
+                            <div class="cert-empid">Employee ID / कर्मचारी आईडी: <span
+                                    id="cert-empid-text">TPL18053</span></div>
+
+                            <p class="cert-paragraph">
+                                has successfully completed the Safety Awareness Quiz conducted at <strong>NMHC
+                                    Lothal</strong>
+                                (National Maritime Heritage Complex, Lothal) and has demonstrated satisfactory
+                                knowledge of workplace safety practices.
+                            </p>
+
+                            <p class="cert-paragraph hindi">
+                                ने <strong>NMHC लोथल</strong> (राष्ट्रीय समुद्री विरासत परिसर, लोथल) में आयोजित सुरक्षा
+                                जागरूकता प्रश्नोत्तरी
+                                सफलतापूर्वक पूर्ण की है और कार्यस्थल सुरक्षा प्रथाओं का संतोषजनक ज्ञान प्रदर्शित किया
+                                है।
+                            </p>
+
+                            <div class="cert-score-display">
+                                <span id="cert-score-text">25 / 30 (83%)</span>
+                                <br><span class="cert-score-label">Score / अंक</span>
+                            </div>
+                        </div>
+
+                        <div class="cert-footer">
+                            <div class="cert-signature-block">
+                                <div class="cert-line" id="cert-date-text">9/3/2026</div>
+                                <div class="cert-subtext">Date / दिनांक</div>
+                            </div>
+                            <div class="cert-signature-block">
+                                <div class="cert-line">NMHC Lothal</div>
+                                <div class="cert-subtext">Project / परियोजना</div>
+                            </div>
+                            <div class="cert-signature-block">
+                                <div class="cert-line" id="cert-dept-text">Safety Department</div>
+                                <div class="cert-subtext">Safety Department / सुरक्षा विभाग</div>
+                            </div>
+                        </div>
+
+                        <div class="cert-bottom-msg">
+                            Best of Luck from <span id="cert-wisher-text">TatA Projects</span> | <span
+                                id="cert-wisher-hindi">टाटा प्रोजेक्ट्स</span> की ओर से शुभकामनाएं
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="certificate-actions">
+                <button id="btn-download-cert" class="btn btn-primary">Download Certificate</button>
+                <button id="btn-back-home" class="btn btn-secondary">Back to Home</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="loader" class="loader-overlay hidden">
+        <div class="spinner"></div>
+        <p>Processing...</p>
+    </div>
+
+    <!-- Custom Modal -->
+    <div id="custom-modal" class="loader-overlay hidden" style="background: rgba(0,0,0,0.5);">
+        <div class="card premium-card" style="margin: 0 20px;">
+            <h2 id="modal-title">Notice</h2>
+            <p id="modal-text">Message goes here</p>
+            <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+                <button id="btn-modal-cancel" class="btn btn-secondary hidden">Cancel</button>
+                <button id="btn-modal-ok" class="btn btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
